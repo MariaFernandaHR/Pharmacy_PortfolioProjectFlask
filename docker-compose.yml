@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  flask_app:
+    container_name: flask_app
+    image: flask_app
+    build: . 
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_URL=postgresql://postgres:postgres@db:5432/postgres
+    depends_on:
+      - db
+  
+  db:
+    container_name: db
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+      container_name: pgadmin_container
+      image: dpage/pgadmin4:5.2
+      restart: always
+      environment:
+          PGADMIN_DEFAULT_EMAIL: admin@example.com
+          PGADMIN_DEFAULT_PASSWORD: admin123
+          PGADMIN_LISTEN_PORT: 5433
+          PGADMIN_CONFIG_SERVER_MODE: "False"
+          PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      ports:
+          - "5433:5433"
+      depends_on:
+          - db
+
+volumes:
+  pgdata: {}
